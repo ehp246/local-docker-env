@@ -1,0 +1,13 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:7.0.0-ubi8
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: root
+      MONGODB_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    volumes:
+      - /C/Dev/docker-volumes/mongo/db:/data/db
+      - /C/Dev/docker-volumes/mongo/configdb:/data/configdb
