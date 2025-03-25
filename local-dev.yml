@@ -12,6 +12,8 @@ services:
     volumes:
       - /C/Dev/docker-volumes/mongo/db:/data/db
       - /C/Dev/docker-volumes/mongo/configdb:/data/configdb
+    networks:
+      - default
 
   postgres:
     image: postgres:17.4-alpine3.21
@@ -24,6 +26,8 @@ services:
       - 5432:5432
     volumes:
       - /C/Dev/docker-volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - default
 
   kafka:
     image: apache/kafka:4.0.0
@@ -49,10 +53,13 @@ services:
       - /C/Dev/docker-volumes/kafka/secrets:/etc/kafka/secrets
       - /C/Dev/docker-volumes/kafka/data:/var/lib/kafka/data
       - /C/Dev/docker-volumes/kafka/config:/mnt/shared/config
+    networks:
+      - default
       
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.3
     container_name: elasticsearch
+    restart: unless-stopped
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
@@ -66,16 +73,21 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    networks:
+      - default
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.17.3
     container_name: kibana
+    restart: unless-stopped
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch    
+    networks:
+      - default
 
   ollama:
       image: ollama/ollama:0.6.1
@@ -85,6 +97,8 @@ services:
         - "11434:11434"
       volumes:
         - /C/Dev/docker-volumes/ollama:/root/.ollama/models
+      networks:
+        - default
         
   open-webui:
     image: ghcr.io/open-webui/open-webui:git-74da9c4-ollama
@@ -96,3 +110,8 @@ services:
       - OLLAMA_BASE_URL=http://ollama:11434
     volumes:
       - /C/Dev/docker-volumes/open-webui:/app/backend/data
+    networks:
+      - default
+
+networks:
+  default:
